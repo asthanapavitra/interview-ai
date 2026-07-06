@@ -11,12 +11,14 @@ app.use(cors({
 }))
 // Requiring all routers
 const authRouter=require('./routes/auth.routes');
+const interviewRouter=require('./routes/interview.routes');
 
-app.get("/",(req,res)=>{
-    res.send("Hello")
-})
 
 // Using routes
 
 app.use('/api/auth', authRouter);
+
+app.use('/api/interview',interviewRouter);
+
+
 module.exports=app;
