@@ -6,10 +6,12 @@ const app=express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin:process.env.FRONTEND_URL,
     credentials:true
 }))
+
 // Requiring all routers
+
 const authRouter=require('./routes/auth.routes');
 const interviewRouter=require('./routes/interview.routes');
 
