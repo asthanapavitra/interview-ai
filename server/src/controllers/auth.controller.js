@@ -43,7 +43,12 @@ async function registerUserController(req, res) {
       },
     );
 
-    res.cookie("token", token);
+    res.cookie("token", token,{
+       httpOnly: true,
+  secure: true,      // HTTPS only
+  sameSite: "None",  // Required for cross-site cookies
+  maxAge: 24 * 60 * 60 * 1000 // Optional: 1 day
+    });
 
     res.status(201).send({
       message: "User registered Successfully",
@@ -96,7 +101,12 @@ async function loginUserController(req, res) {
       },
     );
 
-    res.cookie("token", token);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 24 * 60 * 60 * 1000
+    });
 
     return res.status(201).send({
       message: "User loggedIn Successfully",
