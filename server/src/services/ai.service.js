@@ -2,7 +2,6 @@ const { GoogleGenAI } = require("@google/genai");
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const puppeteer = require("puppeteer");
 
-
 // Define the schema natively using Gemini's supported OpenAPI subset
 const rawInterviewReportSchema = {
   $schema: "http://json-schema.org/draft-07/schema#",
@@ -140,8 +139,16 @@ async function generateInterviewReport({
   }
 }
 async function generatePDFfromHtml(htmlContent) {
- 
-  const browser = await puppeteer.launch();
+  let browser;
+  if (process.env.NODE_ENV === "production") {
+    browser = await puppeteer.launch({
+      executablePath:
+        process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath(),
+      args: ["--no-sandbox", "--disable-setuid-sandbox"], // needed on Render's containers
+    });
+  } else {
+    browser = await puppeteer.launch();
+  }
   const page = await browser.newPage();
   await page.setContent(htmlContent, { waitUntil: "networkidle0" });
 
@@ -183,7 +190,7 @@ Writing & Strategy Guidelines:
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview", // Stick to stable 2.5-flash
+      model: "gemini-2.5-flash", // Stick to stable 2.5-flash
       contents: prompt,
       config: {
         responseMimeType: "application/json",
