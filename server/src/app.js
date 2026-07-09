@@ -1,6 +1,11 @@
 const express=require('express');
 const cookieParser=require('cookie-parser')
 const cors=require('cors')
+
+const puppeteer = require("puppeteer");
+const fs = require("fs");
+
+
 const app=express();
 
 app.use(express.json());
@@ -22,5 +27,16 @@ app.use('/api/auth', authRouter);
 
 app.use('/api/interview',interviewRouter);
 
-
+app.get("/test", (req, res) => {
+  try {
+    res.json({
+      executable: puppeteer.executablePath(),
+      exists: fs.existsSync(puppeteer.executablePath()),
+    });
+  } catch (err) {
+    res.json({
+      error: err.message,
+    });
+  }
+});
 module.exports=app;

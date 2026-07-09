@@ -1,11 +1,8 @@
 const { GoogleGenAI } = require("@google/genai");
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const puppeteer = require("puppeteer");
-const fs=require('fs')
-const path = puppeteer.executablePath();
+const fs = require("fs");
 
-console.log(path);
-console.log("Exists:", fs.existsSync(path));
 // Define the schema natively using Gemini's supported OpenAPI subset
 const rawInterviewReportSchema = {
   $schema: "http://json-schema.org/draft-07/schema#",
@@ -143,6 +140,10 @@ async function generateInterviewReport({
   }
 }
 async function generatePDFfromHtml(htmlContent) {
+  // const path = puppeteer.executablePath();
+
+  // console.log(path);
+  // console.log("Exists:", fs.existsSync(path));
   const browser = await puppeteer.launch({
     executablePath: puppeteer.executablePath(),
     headless: true,
