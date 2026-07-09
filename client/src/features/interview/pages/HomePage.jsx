@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import "../style/home.scss";
-
+import { useInterview } from "../hooks/useInterview";
+import { useNavigate } from "react-router-dom";
 const HomePage = () => {
+  const { loading, generateReport ,reports} = useInterview();
   const [resumeFile, setResumeFile] = useState(null);
   const [selfDescription, setSelfDescription] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [selectedOption, setSelectedOption] = useState("resume");
-
+  const navigate = useNavigate();
   const handleResumeChange = (e) => {
     if (e.target.files) {
       setResumeFile(e.target.files[0]);
@@ -29,7 +31,17 @@ const HomePage = () => {
       setResumeFile(e.dataTransfer.files[0]);
     }
   };
-
+  const handleSubmit = async () => {
+    const id = await generateReport({
+      selfDescription,
+      jobDescription,
+      resumeFile,
+    });
+    navigate(`/interview/${id}`);
+  };
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
   return (
     <main className="home-page">
       <div className="header-section">
@@ -89,7 +101,7 @@ const HomePage = () => {
                 type="file"
                 id="resume"
                 name="resume"
-                accept=".pdf,.doc,.docx"
+                accept=".pdf"
                 onChange={handleResumeChange}
               />
             </div>
@@ -128,8 +140,8 @@ const HomePage = () => {
                 readOnly
               />
               <label htmlFor="requirement">
-                Use <strong>Resume and Self Description </strong>  together 
-                to generate a more accurate interview strategy
+                Use <strong>Resume and Self Description </strong> together to
+                generate a more accurate interview strategy
               </label>
             </div>
           </div>
@@ -137,11 +149,34 @@ const HomePage = () => {
       </div>
 
       <div className="action-section">
-        <button className="generate-button">
+        <button onClick={handleSubmit} className="generate-button">
           <span>⭐</span> Generate My Interview Strategy
         </button>
       </div>
+      <section className="recent-plans">
+        <div className="section-heading">
+          <h2>My Recent Interview Plans</h2>
+          <button onClick={() => navigate("/history")}>View All</button>
+        </div>
 
+        <div className="plans-container">
+          {reports?.map((report) => (
+            <div
+              key={report._id}
+              className="plan-card"
+              onClick={() => navigate(`/interview/${report._id}`)}
+            >
+              <h3>{report.title || "Software Engineer"}</h3>
+
+              <p className="date">
+                Generated on {new Date(report.createdAt).toLocaleDateString()}
+              </p>
+
+              <p className="score">Match Score: {report.matchScore}%</p>
+            </div>
+          ))}
+        </div>
+      </section>
       <footer className="footer-info">
         <span>AI-Powered Strategy Generation • Aspire Jobs</span>
       </footer>
