@@ -142,15 +142,14 @@ async function generatePDFfromHtml(htmlContent) {
   let browser;
   if (process.env.NODE_ENV === "production") {
     browser = await puppeteer.launch({
-      executablePath:
-        await puppeteer.executablePath(),
+      executablePath: await puppeteer.executablePath(),
       args: ["--no-sandbox", "--disable-setuid-sandbox"], // needed on Render's containers
     });
   } else {
     browser = await puppeteer.launch();
   }
   const page = await browser.newPage();
-  await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+  await page.setContent(htmlContent, { waitUntil: "domcontentloaded" });
 
   const pdfBuffer = await page.pdf({ format: "A4" });
   await browser.close();
