@@ -1,7 +1,7 @@
 const { GoogleGenAI } = require("@google/genai");
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const puppeteer = require("puppeteer");
-const fs = require("fs");
+
 
 // Define the schema natively using Gemini's supported OpenAPI subset
 const rawInterviewReportSchema = {
@@ -140,15 +140,8 @@ async function generateInterviewReport({
   }
 }
 async function generatePDFfromHtml(htmlContent) {
-  // const path = puppeteer.executablePath();
-
-  // console.log(path);
-  // console.log("Exists:", fs.existsSync(path));
-  const browser = await puppeteer.launch({
-    executablePath: puppeteer.executablePath(),
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
+ 
+  const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.setContent(htmlContent, { waitUntil: "networkidle0" });
 
