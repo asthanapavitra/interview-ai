@@ -143,7 +143,7 @@ async function generatePDFfromHtml(htmlContent) {
   if (process.env.NODE_ENV === "production") {
     browser = await puppeteer.launch({
       executablePath:
-        process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath(),
+        await puppeteer.executablePath(),
       args: ["--no-sandbox", "--disable-setuid-sandbox"], // needed on Render's containers
     });
   } else {
