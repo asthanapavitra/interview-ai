@@ -106,9 +106,24 @@ async function getResumePdf(req, res) {
   });
   res.send(pdfBuffer)
 }
+
+async function deleteInterviewPlan(req,res){
+  const interviewId=req.params.interviewId;
+  const interviewReport=await InterviewReport.findOne({_id:interviewId,user:req.user.id});
+  if(!interviewReport){
+    return res.status(400).send({
+      message:"Interview Report with the given id doesnot exist"
+    })
+  }
+  await InterviewReport.deleteOne({_id:interviewId})
+  res.status(200).send({
+    message:"Interview Report deleted successfully"
+  })
+}
 module.exports = {
   generateInterviewReportByAI,
   getAllInterviewReports,
   getInterviewReportById,
-  getResumePdf
+  getResumePdf,
+  deleteInterviewPlan
 };

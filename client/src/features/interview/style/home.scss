@@ -424,7 +424,6 @@ main.home-page {
 
       .right-section {
         overflow-y: visible;
-   
       }
     }
   }
@@ -534,12 +533,12 @@ main.home-page {
 
     button {
       background: transparent;
-      border: 1px solid rgba(233, 30, 99, .4);
+      border: 1px solid rgba(233, 30, 99, 0.4);
       color: #e91e63;
-      padding: .6rem 1.2rem;
-      border-radius: .5rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
       cursor: pointer;
-      transition: .3s;
+      transition: 0.3s;
 
       &:hover {
         background: #e91e63;
@@ -552,14 +551,14 @@ main.home-page {
     display: flex;
     gap: 1rem;
     overflow-x: auto;
-    padding-bottom: .5rem;
+    padding-bottom: 0.5rem;
 
     &::-webkit-scrollbar {
       height: 7px;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: rgba(233,30,99,.5);
+      background: rgba(233, 30, 99, 0.5);
       border-radius: 10px;
     }
   }
@@ -574,25 +573,52 @@ main.home-page {
 
     background: linear-gradient(
       145deg,
-      rgba(255,255,255,.06),
-      rgba(255,255,255,.02)
+      rgba(255, 255, 255, 0.06),
+      rgba(255, 255, 255, 0.02)
     );
 
-    border: 1px solid rgba(255,255,255,.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 
     cursor: pointer;
 
-    transition: .25s;
+    transition: 0.25s;
 
+    .delete-btn {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 30px;
+      height: 30px;
+
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+
+      color: #bcbcbc;
+      cursor: pointer;
+
+      transition: 0.2s;
+
+      &:hover {
+        background: rgba(233, 30, 99, 0.15);
+        border-color: #e91e63;
+        color: #e91e63;
+      }
+    }
     h3 {
       color: white;
       font-size: 1.2rem;
-      margin-bottom: .8rem;
+      margin-bottom: 0.8rem;
     }
 
     .date {
       color: #bcbcbc;
-      margin-bottom: .7rem;
+      margin-bottom: 0.7rem;
     }
 
     .score {
@@ -603,7 +629,7 @@ main.home-page {
     &:hover {
       transform: translateY(-6px);
       border-color: #e91e63;
-      box-shadow: 0 10px 30px rgba(233,30,99,.25);
+      box-shadow: 0 10px 30px rgba(233, 30, 99, 0.25);
     }
   }
 }

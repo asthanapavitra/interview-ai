@@ -65,3 +65,12 @@ export async function generateResumePdf(interviewId){
          console.log(err.message);
     }
 }
+
+export async function deleteInterviewPlan(interviewId){
+   try{
+        const response=await api.get(`/api/interview/delete/${interviewId}`)
+        return response.data;
+    }catch(err){
+        console.log(err.message);
+    }
+}

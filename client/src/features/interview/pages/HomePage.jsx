@@ -2,13 +2,17 @@ import React, { useState } from "react";
 import "../style/home.scss";
 import { useInterview } from "../hooks/useInterview";
 import { useNavigate } from "react-router-dom";
+import Loading from "../../../Loading";
+import Navbar from "../components/Navbar";
 const HomePage = () => {
-  const { loading, generateReport ,reports} = useInterview();
+  const { loading, generateReport, reports,deletePlan } = useInterview();
   const [resumeFile, setResumeFile] = useState(null);
   const [selfDescription, setSelfDescription] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [selectedOption, setSelectedOption] = useState("resume");
   const navigate = useNavigate();
+
+
   const handleResumeChange = (e) => {
     if (e.target.files) {
       setResumeFile(e.target.files[0]);
@@ -40,10 +44,13 @@ const HomePage = () => {
     navigate(`/interview/${id}`);
   };
   if (loading) {
-    return <h1>Loading...</h1>;
+    return <Loading/>
   }
   return (
-    <main className="home-page">
+    <div>
+       <Navbar/>
+         <main className="home-page">
+     
       <div className="header-section">
         <h1>
           Create Your Custom{" "}
@@ -166,6 +173,25 @@ const HomePage = () => {
               className="plan-card"
               onClick={() => navigate(`/interview/${report._id}`)}
             >
+              <button
+                className="delete-btn"
+                onClick={(e) => {
+                  e.stopPropagation(); // prevent card navigation
+                  deletePlan(report._id);
+                }}
+                aria-label="Delete plan"
+              >
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+                  <path
+                    d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+
               <h3>{report.title || "Software Engineer"}</h3>
 
               <p className="date">
@@ -181,6 +207,8 @@ const HomePage = () => {
         <span>AI-Powered Strategy Generation • Aspire Jobs</span>
       </footer>
     </main>
+    </div>
+  
   );
 };
 

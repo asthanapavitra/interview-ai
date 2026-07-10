@@ -3,7 +3,7 @@ const {Router}=require('express');
 const interviewRouter=Router();
 const authMiddleware=require('../middlewares/auth.middleware')
 const upload=require('../middlewares/file.middleware')
-const {generateInterviewReportByAI,getAllInterviewReports,getInterviewReportById,getResumePdf}= require('../controllers/interview.controller')
+const {generateInterviewReportByAI,getAllInterviewReports,getInterviewReportById,getResumePdf,deleteInterviewPlan}= require('../controllers/interview.controller')
 
 
 /**
@@ -36,4 +36,12 @@ interviewRouter.get('/', authMiddleware,getAllInterviewReports)
  * @access Private
  */
 interviewRouter.get('/resume/pdf/:interviewId', authMiddleware,getResumePdf)
+
+
+/**
+ * @route GET /api/interview/delete/:interviewId
+ * @description Deletes the interview Report with the given id
+ * @access Private
+ */
+interviewRouter.get('/delete/:interviewId',authMiddleware,deleteInterviewPlan);
 module.exports=interviewRouter;

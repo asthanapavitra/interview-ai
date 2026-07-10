@@ -1,12 +1,15 @@
 import { useContext, useEffect } from "react";
 import { InterviewContext } from "../interview.context";
 import {
+  deleteInterviewPlan,
   generateInterviewReport,
   generateResumePdf,
   getAllInterviewReports,
   getInterviewReportById,
 } from "../services/ai.service";
 import { useParams } from "react-router-dom";
+
+
 
 export const useInterview = () => {
   const context = useContext(InterviewContext);
@@ -51,14 +54,25 @@ export const useInterview = () => {
   };
   const getAllReports = async () => {
     try {
-      setLoading(true);
+      
       const response = await getAllInterviewReports();
       setReports(response.interviewReports);
     } catch (err) {
       console.log(err.message);
-    } finally {
-      setLoading(false);
     }
+  };
+
+  const deletePlan= async (interviewId) => {
+    try {
+     
+      const response = await deleteInterviewPlan(interviewId);
+      getAllReports();
+      if(response.status==200){
+        console.log("Interview Report deleted Successfully");
+      }
+    } catch (err) {
+      console.log(err.message);
+    } 
   };
   const { interviewId } = useParams();
   const getResume = async () => {
@@ -86,7 +100,7 @@ export const useInterview = () => {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     if (interviewId) {
       getReportById(interviewId);
@@ -102,5 +116,6 @@ export const useInterview = () => {
     getReportById,
     getAllReports,
     getResume,
+    deletePlan
   };
 };

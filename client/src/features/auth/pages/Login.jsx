@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../auth.form.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import Loading from "../../../Loading";
 const Login = () => {
 
   const navigate=useNavigate();
@@ -20,11 +21,7 @@ const Login = () => {
   if(loading){
 
     return (
-        <main>
-            <h1>
-                Loading........
-            </h1>
-        </main>
+       <Loading/>
     )
   }
   return (
