@@ -93,7 +93,7 @@ export const useInterview = () => {
       window.open(pdfUrl, "_blank");
 
       // Optional but recommended: Revoke the URL after a short delay to free up memory
-      setTimeout(() => URL.revokeObjectURL(pdfUrl), 10000);
+      setTimeout(() => URL.revokeObjectURL(pdfUrl), 100000);
     } catch (err) {
       console.error("Error displaying PDF:", err.message);
     } finally {

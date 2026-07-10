@@ -151,7 +151,16 @@ async function generatePDFfromHtml(htmlContent) {
   const page = await browser.newPage();
   await page.setContent(htmlContent, { waitUntil: "domcontentloaded" });
 
-  const pdfBuffer = await page.pdf({ format: "A4" });
+  const pdfBuffer = await page.pdf({
+    format: "A4",
+    printBackground: true,
+    margin: {
+      top: "10mm", // Professional top spacing
+      bottom: "8mm", // Prevents single bullet points from leaking to page 2
+      left: "5mm", // Clean left alignment margin
+      right: "5mm", // Clean right alignment margin
+    },
+  });
   await browser.close();
   return pdfBuffer;
 }
@@ -170,23 +179,60 @@ async function generateResumePdf({ resume, jobDescription, selfDescription }) {
     required: ["html"],
   };
   const prompt = `
-Generate a highly targeted, interview-winning, and ATS-friendly resume based on these inputs:
+You are an elite, professional resume writer and ATS (Applicant Tracking System) optimization specialist who has helped thousands of candidates secure interviews at FAANG and top tier tech firms. Your task is to generate a pristine, ready-to-submit, single-page-optimized, ATS-friendly HTML resume.
+
+Analyze these inputs to customize the output perfectly:
 - Candidate Resume: ${resume}
 - Self Description: ${selfDescription}
 - Target Job Description: ${jobDescription}
 
-Writing & Strategy Guidelines:
-1. **High Impact & ATS Optimized:** Tailor the content precisely to pass ATS filters for the provided Job Description. Highlight matching keywords, technical skills, and metrics-driven achievements naturally. 
-2. **Human Tone:** Write like a professional resume writer, not an AI. Avoid cliché corporate buzzwords (e.g., "spearheaded a synergistic paradigm shift", "testament to"). Keep the language clear, crisp, and compelling enough to secure an interview call.
-3. **Strict Page Budget:** Keep the layout tightly structured. Content must comfortably fit across 1 to 2 pages without being overly verbose or leaving excessive empty space.
-4. **Design & HTML Layout:** Output a complete HTML document with embedded CSS. Use a clean, professional accent color (like deep navy or slate) for headings, combined with standard system fonts (Helvetica, Inter). 
-5. **Puppeteer Print Fixes:** 
-   - Use \`@page { size: A4; margin: 0.6in 0.5in 0.5in 0.5in; }\` for clean, uniform margins on all pages.
-   - Set \`body { margin: 0; padding: 0; }\`.
-   - Prevent titles from separating from their blocks: \`h2, h3 { page-break-after: avoid; break-after: avoid; }\`.
-   - Prevent broken text blocks: \`li { break-inside: avoid; }\`. Do not use \`page-break-inside: avoid;\` on large container sections.
-`;
+═══════════════════════════════════
+STEP 1: RUTHLESS JOB DESCRIPTION ALIGNMENT & FILTERING
+═══════════════════════════════════
+Your priority is to ensure a 100% match with the Target Job Description while strictly respecting physical space limits.
+- **Extract Target Keywords:** Identify core tech stacks, languages, frameworks, and tools from the Target Job Description. Prioritize these across the Skills, Experience, and Projects sections.
+- **Ruthless Content Trimming:** If the candidate qualifies as a FRESHER (0-1 years full-time experience), the output MUST fit flawlessly onto **exactly 1 page**. 
+- If the original material contains too many sections (e.g., extracurriculars, multiple secondary projects, overlapping certificates), you MUST select the top 2-3 most relevant items and completely delete the rest. Do not let minor details (like club coordination or general activities) push critical text onto a second page.
 
+═══════════════════════════════════
+STEP 2: DEFINE CONTENT DENSITY & COMPACT DESIGN
+═══════════════════════════════════
+The resume must feature a clean, high-density, small-font professional aesthetic exactly like standard premium recruiter layouts:
+- **Font Size:** Body text and bullets must be strictly **10pt** (or 13px/0.85rem). Headings should be **13-14pt** bold. Candidate name should be **22-24pt** bold.
+- **Margins & Spacing:** Use compact vertical space management. Line-height should be **1.2 to 1.3** max. Keep margins between sections extremely disciplined (e.g., 8-12px padding/margin) to guarantee a compact layout that feels complete without text spillage.
+- **Fresher Limits:** Summary: 2 lines max. Skills: 3-4 category lines max. Projects: Max 2-3 projects, strictly 2-3 bullets each. Education: 2 lines. Awards/Certifications: Combine or isolate to the top 2-3 highest-impact achievements only.
+
+═══════════════════════════════════
+STEP 3: ATS-COMPLIANCE RULES (STRICT — 100% PARSEABLE)
+═══════════════════════════════════
+1. **Single Column Only:** Absolutely no sidebars, multi-column layouts, or side-by-side split panels.
+2. **No Layout Tables:** Do not use HTML tables for grid structures or skills matrices. Use simple text dividers (e.g., vertical pipes "|" or commas) for categorized skills lines.
+3. **No Icons/Graphics/SVGs:** Remove all vector paths, emojis, or font icons from contact details or headers. Use clean, plain text labels: "Email: | Phone: | LinkedIn: | GitHub:".
+4. **Standard Headers Only:** Use exactly: "Summary", "Skills", "Professional Experience" (or "Experience"), "Projects", "Education", "Certifications & Achievements".
+5. **No Header/Footer HTML Tags:** Keep all content inside the main \`<body>\` flow to prevent ATS processing engines from omitting floating text blocks.
+6. **Standard Bullets:** Use only classic black bullet points (•). List all entries in strict reverse-chronological order.
+
+═══════════════════════════════════
+STEP 4: HUMAN EXECUTIVE TONE (ZERO AI-BUZZWORDS)
+═══════════════════════════════════
+The language must sound like an elite human resume engineer, completely scrubbing away any generic AI-generated footprints.
+- **CRITICAL - BAN ALL AI CLICHÉS:** Automatically delete and avoid: *"spearheaded", "synergy", "testament", "passionate", "results-driven", "fostered", "orchestrated", "delved", "beacon", "dynamic", "transformative", "additionally", "furthermore"*. 
+- **The Metric-First Formula:** Every single bullet point must follow an action-driven, quantitative structure: **[Strong Action Verb] + [Technical core execution/what you built using specific tools] + [Quantifiable Business Impact/Result]** (e.g., *"Reduced API latency by 24% by refactoring the core Redis caching layers"* instead of *"Responsible for optimizing API endpoints"*).
+- Bold key metrics, percentages, numbers, and core tech terms within bullets to make the document highly scannable for recruiters.
+
+═══════════════════════════════════
+STEP 5: VISUAL CSS LAYOUT
+═══════════════════════════════════
+- **Typography:** Use clean, premium system fonts for maximum platform cross-compatibility: \`font-family: 'Arial', 'Helvetica', sans-serif;\` or \`'Calibri'\`. Body color must be a crisp off-black (\`#111111\` or \`#1a1a1a\`).
+- **Accent Color:** Use exactly one deep, professional dark accent color sparingly for the Candidate Name and Section Headers (e.g., Deep Navy \`#1a2942\` or Slate \`#2d3748\`). 
+- **Dividers:** Include a clean \`border-bottom: 1px solid [accent-color];\` immediately beneath section headings with tight margins.
+- **Layout Alignment:** Left/Right flex row alignment for titles and dates: \`display: flex; justify-content: space-between; align-items: baseline; break-inside: avoid;\`.
+
+═══════════════════════════════════
+OUTPUT FORMAT
+═══════════════════════════════════
+Return ONLY a valid JSON object matching the requested schema. The 'html' property value must contain the complete HTML document starting with \`<!DOCTYPE html>\`. Do not include code markdown blocks (\`\`\`html), explanations, or opening/closing commentary.
+`;
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash", // Stick to stable 2.5-flash

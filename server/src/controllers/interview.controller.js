@@ -102,7 +102,7 @@ async function getResumePdf(req, res) {
   const pdfBuffer=await generateResumePdf({jobDescription,selfDescription,resume})
   res.set({
     "Content-Type":"application/pdf",
-    "Content-Disposition":`attachment; filename=resume_${interviewId}.pdf`
+    "Content-Disposition":`inline; filename=resume_${interviewId}.pdf`
   });
   res.send(pdfBuffer)
 }
