@@ -22,7 +22,17 @@ main {
       gap: 1rem;
       font-size: 1.2rem;
       font-weight: 400;
+      .google-btn-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        
+      }
 
+      .divider {
+        text-align: center;
+        color: #888;
+      }
       .input-group {
         display: flex;
         flex-direction: column;
@@ -38,8 +48,9 @@ main {
         }
       }
     }
+
     p {
-        text-align: center;
+      text-align: center;
       .btn {
         color: rgb(197, 20, 108);
         text-decoration: none;

@@ -1,14 +1,21 @@
-import { React, useState } from "react";
+import { React, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { loading, handleRegister } = useAuth();
+  const { loading, handleRegister, handleGoogleAuth } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-
+  const googleWrapperRef = useRef(null);
+  const [googleWidth, setGoogleWidth] = useState(300);
+  useEffect(() => {
+    if (googleWrapperRef.current) {
+      setGoogleWidth(googleWrapperRef.current.offsetWidth);
+    }
+  }, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
     const registerData = {
@@ -19,10 +26,12 @@ const Register = () => {
     await handleRegister(registerData);
     navigate("/");
   };
+  const handleGoogle = async (credentialResponse) => {
+    await handleGoogleAuth(credentialResponse);
+    navigate("/");
+  };
   if (loading) {
-    return (
-      <Loading/>
-    );
+    return <Loading />;
   }
   return (
     <main>
@@ -69,7 +78,24 @@ const Register = () => {
             />
           </div>
           <button className="button primary-button">Register</button>
+          <div className="divider">OR</div>
+
+          <div className="google-btn-wrapper" ref={googleWrapperRef}>
+            <GoogleLogin
+              onSuccess={(credentialResponse) =>
+                handleGoogle(credentialResponse)
+              }
+              onError={() => console.log("Google Login Failed")}
+              theme="filled_black"
+              shape="square"
+              text="signup_with"
+              size="large"
+              logo_alignment="center"
+              width={googleWidth}
+            />
+          </div>
         </form>
+
         <p>
           Already have an account?{" "}
           <Link className="btn" to={"/login"}>

@@ -1,29 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "../auth.form.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import Loading from "../../../Loading";
-const Login = () => {
+import { GoogleLogin } from "@react-oauth/google";
 
-  const navigate=useNavigate();
-    const {loading,handleLogin}=useAuth();
+const Login = () => {
+  const navigate = useNavigate();
+  const { loading, handleLogin, handleGoogleAuth } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const handleSubmit = async(e) => {
-    e.preventDefault();
-    const loginData={
-        email,password
+  const googleWrapperRef = useRef(null);
+  const [googleWidth, setGoogleWidth] = useState(300);
+
+  useEffect(() => {
+    if (googleWrapperRef.current) {
+      setGoogleWidth(googleWrapperRef.current.offsetWidth);
     }
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const loginData = { email, password };
     await handleLogin(loginData);
-  navigate('/')
+    navigate("/");
   };
 
-  if(loading){
+  const handleGoogle = async (credentialResponse) => {
+    await handleGoogleAuth(credentialResponse);
+    navigate("/");
+  };
 
-    return (
-       <Loading/>
-    )
+  if (loading) {
+    return <Loading />;
   }
+
   return (
     <main>
       <div className="form-container">
@@ -35,9 +46,7 @@ const Login = () => {
               type="email"
               name="email"
               id="email"
-              onChange={(e)=>{
-                setEmail(e.target.value)
-              }}
+              onChange={(e) => setEmail(e.target.value)}
               value={email}
               placeholder="abc@example.com"
             />
@@ -48,15 +57,29 @@ const Login = () => {
               type="password"
               name="password"
               id="password"
-              onChange={(e)=>{
-                setPassword(e.target.value)
-              }}
+              onChange={(e) => setPassword(e.target.value)}
               value={password}
               placeholder="Enter password"
             />
           </div>
           <button className="button primary-button">Login</button>
+
+          <div className="divider">OR</div>
+
+          <div className="google-btn-wrapper" ref={googleWrapperRef}>
+            <GoogleLogin
+              onSuccess={(credentialResponse) => handleGoogle(credentialResponse)}
+              onError={() => console.log("Google Login Failed")}
+              theme="filled_black"
+              shape="square"
+              text="signin_with"
+              size="large"
+              logo_alignment="center"
+              width={googleWidth}
+            />
+          </div>
         </form>
+
         <p>
           Don't have an account?{" "}
           <Link className="btn" to={"/register"}>

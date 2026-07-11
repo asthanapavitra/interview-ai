@@ -5,6 +5,7 @@ import {
   logoutUser,
   registerUser,
   getProfile,
+  handleGoogleResponse,
 } from "../services/auth.api";
 
 export const useAuth = () => {
@@ -15,6 +16,17 @@ export const useAuth = () => {
     setLoading(true);
     try {
       const data = await loginUser(loginData);
+      setUser(data.user);
+    } catch (err) {
+      console.log(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleGoogleAuth = async (response) => {
+    setLoading(true);
+    try {
+      const data = await handleGoogleResponse(response);
       setUser(data.user);
     } catch (err) {
       console.log(err.message);
@@ -59,5 +71,5 @@ export const useAuth = () => {
     };
     getAndSetUser();
   }, []);
-  return { user, loading, handleLogin, handleRegister, handleLogout };
+  return { user, loading, handleLogin, handleRegister, handleLogout ,handleGoogleAuth};
 };

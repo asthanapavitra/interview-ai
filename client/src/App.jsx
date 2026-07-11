@@ -4,6 +4,7 @@ import { router } from "./app.routes.jsx";
 import { AuthProvider } from "./features/auth/auth.context.jsx";
 import {InterviewProvider}from './features/interview/interview.context.jsx'
 const App = () => {
+  console.log(import.meta.env.VITE_GOOGLE_CLIENT_ID)
   return (
     <AuthProvider>
       <InterviewProvider>

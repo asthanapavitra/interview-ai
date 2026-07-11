@@ -1,5 +1,5 @@
 const {Router}=require('express');
-const {registerUserController,loginUserController,logoutUserController,getProfile}=require('../controllers/auth.controller')
+const {registerUserController,loginUserController,logoutUserController,getProfile,googleAuthController}=require('../controllers/auth.controller')
 const authMiddleware=require('../middlewares/auth.middleware')
 
 const router=Router();
@@ -25,6 +25,12 @@ router.post('/login', loginUserController)
  */
 router.get('/logout', logoutUserController)
 
+/**
+ * @routes /api/auth/google
+ * @access Public
+ * @description Login/Register a user via Google Sign-In
+ */
+router.post('/google', googleAuthController)
 /**
  * @routes /api/auth/get-profile
  * @access Private

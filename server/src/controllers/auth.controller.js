@@ -4,6 +4,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie-parser");
 const blacklistTokenModel = require("../models/blacklist-token.model");
+const { OAuth2Client } = require("google-auth-library");
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 /**
  * @name Register User controller
  * @access Public
@@ -159,9 +161,91 @@ async function getProfile(req,res){
     });
     }
 }
+
+/**
+ * @name Google Auth controller
+ * @access Public
+ * @description Logs in or registers a user via Google Sign-In
+ */
+async function googleAuthController(req, res) {
+  try {
+    const { credential } = req.body; // the ID token sent from frontend
+
+    if (!credential) {
+      return res.status(400).send("Google credential missing");
+    }
+
+    // Verify the token is real and actually issued by Google for YOUR app
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name } = payload;
+    // 'sub' is Google's unique permanent ID for this user
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // New user — create account
+      // generate a unique-ish username from their email since your schema requires one
+      let baseUsername = email.split("@")[0];
+      let username = baseUsername;
+      let counter = 1;
+
+      // ensure username is unique
+      while (await User.findOne({ username })) {
+        username = `${baseUsername}${counter}`;
+        counter++;
+      }
+
+      user = await User.create({
+        email,
+        username,
+        googleId,
+      });
+    } else if (!user.googleId) {
+      // Existing email/password user signing in with Google for the first time
+      user.googleId = googleId;
+      await user.save();
+    }
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+        username: user.username,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).send({
+      message: "Logged in with Google successfully",
+      user: {
+        email: user.email,
+        username: user.username,
+        id: user._id,
+      },
+    });
+  } catch (err) {
+    res.status(501).send({
+      message: err.message,
+    });
+  }
+}
 module.exports = {
   registerUserController,
   loginUserController,
   logoutUserController,
-  getProfile
+  getProfile,
+  googleAuthController
+  
 };

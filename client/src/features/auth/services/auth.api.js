@@ -7,7 +7,7 @@ const api = axios.create({
 export async function registerUser(registerData) {
   try {
     const response = await api.post("/api/auth/register", registerData);
-  
+
     return response.data;
   } catch (err) {
     console.log(err.message);
@@ -23,16 +23,24 @@ export async function loginUser(loginData) {
     console.log(err.message);
   }
 }
+export async function handleGoogleResponse(response) {
+  // response.credential is the ID token from Google
+  const res = await api.post("/api/auth/google", {
+    credential: response.credential,
+  });
 
+  return res.data;
+}
 export async function logoutUser() {
   try {
     const response = await api.get("/api/auth/logout");
-    
+
     return response.data;
   } catch (err) {
     console.log(err.message);
   }
 }
+
 export async function getProfile() {
   try {
     const response = await api.get("/api/auth/get-profile");
